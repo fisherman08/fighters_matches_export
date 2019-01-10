@@ -1,7 +1,7 @@
 require 'open-uri'
 require_relative './html'
 
-class WebHtml
+class WebHtmlDownloader
   def initialize(base_url, year, months)
     @base_url = base_url
     @year = year

@@ -2,7 +2,7 @@
 require 'pp'
 
 require_relative './scraper/scraper'
-require_relative './html/web_html'
+require_relative './html/b_html_downloader'
 
 begin
 
@@ -10,7 +10,7 @@ begin
   year = '2019'
   months = %w(03)
 
-  htmls = WebHtml.new(base_url, year, months).htmls
+  htmls = WebHtmlDownloader.new(base_url, year, months).htmls
 
   matches = Scraper.new(htmls: htmls).scrape
 
