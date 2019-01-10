@@ -1,14 +1,13 @@
-require 'open-uri'
+
 require 'nokogiri'
+require 'date'
 require_relative '../entity/match'
 
 class Scraper
   # 公式ホームページにつないで試合データを取ってくるクラス
 
-  def initialize(base_url, year, months)
-    @base_url = base_url
-    @year = year
-    @months = months
+  def initialize(htmls:)
+    @htmls = htmls
 
     # 試合詳細の画像ファイル名からチーム名に変換するdict
     @team_map = {
@@ -30,10 +29,9 @@ class Scraper
 
   def scrape
     result = []
-    charset = ""
     # 月ごとに見ていく
-    @months.each do |month|
-      doc = document(month)
+    @htmls.each do |html|
+      doc = document(html.html)
       trs = doc.css('table.pl_gameCalendar02 tbody tr')
       next  unless trs
 
@@ -42,8 +40,8 @@ class Scraper
         stadium = stadium(tr)
         opponent = opponent(tr)
 
-        date = "#{@year}/#{month}/#{"%#02d" % day.to_i}"
-        match = Match.new(date: date, stadium: stadium, opponent: opponent)
+        date = Date.new(html.year.to_i, html.month.to_i, day.to_i)
+        match = Match.new(date: date, stadium: stadium, opponent: opponent).freeze
         result.push match
       end
 
@@ -55,15 +53,8 @@ class Scraper
 
   private
   # documentを取ってくる
-  def document(month)
-    url = "#{@base_url}/#{@year}#{month}/index.html"
-    charset = ""
-    html = open(url) do |f|
-      charset = f.charset
-      f.read
-    end
-
-    Nokogiri::HTML.parse(html, nil, charset)
+  def document(html)
+    Nokogiri::HTML.parse(html, nil, 'utf-8')
   end
 
   # trから開催日を取得する
