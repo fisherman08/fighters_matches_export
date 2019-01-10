@@ -1,5 +1,6 @@
 require 'open-uri'
 require 'nokogiri'
+require_relative '../entity/match'
 
 class Scraper
   # 公式ホームページにつないで試合データを取ってくるクラス
@@ -91,21 +92,6 @@ class Scraper
     end
 
     @team_map[team_name.to_sym]
-  end
-
-
-  class Match
-    attr_reader :date, :opponent, :stadium
-    @date     = ""
-    @opponent = ""
-    @stadium  = ""
-
-    def initialize(date:, opponent:, stadium:)
-      @date     = date
-      @opponent = opponent
-      @stadium  = stadium
-    end
-
   end
 
 

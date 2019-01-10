@@ -13,7 +13,7 @@ begin
 
   matches = scraper.scrape
 
-  puts matches
+  pp matches
 
 rescue => e
     pp e
