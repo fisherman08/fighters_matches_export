@@ -1,40 +1,21 @@
-require 'open-uri'
-require 'nokogiri'
+
 require 'pp'
+
+require_relative './scraper/scraper'
 
 begin
 
-  result = []
   base_url = 'https://www.fighters.co.jp/game/schedule'
   year = '2019'
-  months = %w(04)
+  months = %w(03)
 
-  # 月ごとに見ていく
-  months.each do |month|
-    url = "#{base_url}/#{year}#{month}/index.html"
-    html = open(url) do |f|
-      charset = f.charset
-      f.read
-    end
-    pp html
-  end
+  scraper = Scraper.new(base_url = base_url, year = year, months = months)
 
-  m = Match.new(date = "", opponent = "")
+  matches = scraper.scrape
+
+  puts matches
+
 rescue => e
     pp e
 end
 
-
-class Match
-    attr_reader :date, :opponent, :stadium
-    @date     = ""
-    @opponent = ""
-    @stadium  = ""
-
-    def initialize(date, opponent, stadium = "")
-        @date     = date
-        @opponent = opponent
-        @stadium  = stadium
-    end
-
-end
