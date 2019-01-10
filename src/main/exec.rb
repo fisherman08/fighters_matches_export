@@ -2,7 +2,7 @@
 require 'pp'
 
 require_relative './scraper/scraper'
-require_relative './html/b_html_downloader'
+require_relative './html/web_html_downloader'
 
 begin
 
