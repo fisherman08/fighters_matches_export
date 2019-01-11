@@ -7,4 +7,6 @@ gem 'nokogiri'
 
 gem 'rspec'
 
+gem 'google-api-client'
+
 # gem "rails"
