@@ -4,19 +4,21 @@ require 'pp'
 require_relative './scraper/scraper'
 require_relative './html/web_html_downloader'
 require_relative './google/connector'
-require_relative './google/calendar_creator'
+require_relative './google/calendar_manager'
 
 begin
 
-  #base_url = 'https://www.fighters.co.jp/game/schedule'
-  #year = '2019'
-  #months = %w(03)
+  base_url = 'https://www.fighters.co.jp/game/schedule'
+  year = '2019'
+  months = %w(03 04 05 06 07 08 09)
 
-  #htmls = WebHtmlDownloader.new(base_url, year, months).htmls
+  pp 'Get Htmls: Start'
+  htmls = WebHtmlDownloader.new(base_url, year, months).htmls
+  pp "Get Htmls: End: #{htmls.size}"
 
-  #matches = Scraper.new(htmls: htmls).scrape
-
-  #pp matches
+  pp 'Get matches Start'
+  matches = Scraper.new(htmls: htmls).scrape
+  pp "#{matches.size} matches have been found"
 
   credentials = (File.dirname(__dir__) + '/../config/credentials.json').freeze
   token = (File.dirname(__dir__) + '/../config/token.yaml').freeze
@@ -24,21 +26,17 @@ begin
   calendar_id = config[:calendar_id]
 
   calendar_service = Connector.new(credential: credentials, token: token).service
-  creator = CalendarCreator.new service: calendar_service, calendar_id: calendar_id
-  creator.create
+  manager = CalendarManager.new service: calendar_service, calendar_id: calendar_id
 
-
-  response = calendar_service.list_events(calendar_id,
-                                 max_results: 10,
-                                 single_events: true,
-                                 order_by: 'startTime',
-                                 time_min: Time.now.iso8601)
-  puts 'Upcoming events:'
-  puts 'No upcoming events found' if response.items.empty?
-  response.items.each do |event|
-    start = event.start.date || event.start.date_time
-    puts "- #{event.summary} (#{start})"
+  matches.each do |match|
+    pp 'Start insert: ' + match.date.iso8601
+    old_event = manager.find_event(date: match.date)
+    manager.delete_event(event_id: old_event.id) if old_event
+    event = manager.create match.export_for_event
+    manager.insert_event(event: event)
   end
+
+  pp 'Finish!!'
 
 rescue => e
   pp e
