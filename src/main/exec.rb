@@ -9,8 +9,8 @@ require_relative './google/calendar_manager'
 begin
 
   base_url = 'https://www.fighters.co.jp/game/schedule'
-  year = '2019'
-  months = %w(03 04 05 06 07 08 09)
+  year = '2020'
+  months = %w(03 04 05 06 07 08 09 10)
 
   pp 'Get Htmls: Start'
   htmls = WebHtmlDownloader.new(base_url, year, months).htmls
